@@ -1,126 +1,71 @@
 <template>
-  <div @click="clickHandle">
-
-    <div class="userinfo" @click="bindViewTap">
-      <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover" />
-      <img class="userinfo-avatar" src="/static/images/user.png" background-size="cover" />
-
-      <div class="userinfo-nickname">
-        <card :text="userInfo.nickName"></card>
+  <div class="index">
+    <!-- 头部搜索 -->
+    <div class="search">
+      <div @click="toMapPage">{{ city }}</div>
+      <div>
+        <input type="text" placeholder="搜索商品" />
+        <span class="icon"></span>
       </div>
-    </div>
-
-    <div class="usermotto">
-      <div class="user-motto">
-        <card :text="motto"></card>
-      </div>
-    </div>
-
-    <form class="form-container">
-      <input type="text" class="form-control" :value="motto" placeholder="v-model" />
-      <input type="text" class="form-control" v-model="motto" placeholder="v-model" />
-      <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" />
-    </form>
-
-    <a href="/pages/counter/main" class="counter">去往Vuex示例页面</a>
-
-    <div class="all">
-        <div class="left">
-        </div>
-        <div class="right">
-        </div>
     </div>
   </div>
 </template>
 
 <script>
-import card from '@/components/card'
-
+import amapFile from "../../utils/amap-wx";
 export default {
-  data () {
-    return {
-      motto: 'Hello miniprograme',
-      userInfo: {
-        nickName: 'mpvue',
-        avatarUrl: 'http://mpvue.com/assets/logo.png'
-      }
-    }
+  data() {
+    return {};
   },
-
-  components: {
-    card
-  },
-
   methods: {
-    bindViewTap () {
-      const url = '../logs/main'
-      if (mpvuePlatform === 'wx') {
-        mpvue.switchTab({ url })
-      } else {
-        mpvue.navigateTo({ url })
-      }
+    toMapPage() {
+      // wx.getSetting,查询用户是否授权
+      wx.getSetting({
+        success: (result) => {
+          console.log(result);
+          // 如果没有授权，打开设置
+          if (!result.authSetting["scope.userLocation"]) {
+            wx.openSetting({
+              success: (result) => {
+                // 获取授权位置信息
+                this.getCity();
+              },
+              fail: (err) => {
+                console.log(err);
+              },
+              complete: () => {},
+            });
+          } else {
+            wx.navigateTo({
+              url: "/pages/mappage/main",
+            });
+          }
+        },
+      });
     },
-    clickHandle (ev) {
-      console.log('clickHandle:', ev)
-      // throw {message: 'custom test'}
-    }
+    getCity() {
+      let _this = this;
+      var myAmapFun = new amapFile.AMapWX({
+        key: "12d06610823ed1516604646c9a8747cd",
+      });
+      myAmapFun.getRegeo({
+        success: (res) => {
+          console.log(res);
+        },
+        fail: (err) => {
+          _this.$store.commit("update", "北京");
+        },
+      });
+    },
   },
-
-  created () {
-    // let app = getApp()
-  }
-}
+  computed: {
+    city() {
+      return this.$store.state.city;
+    },
+  },
+};
 </script>
 
-<style scoped>
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.userinfo-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
-}
-
-.userinfo-nickname {
-  color: #aaa;
-}
-
-.usermotto {
-  margin-top: 150px;
-}
-
-.form-control {
-  display: block;
-  padding: 0 12px;
-  margin-bottom: 5px;
-  border: 1px solid #ccc;
-}
-.all{
-  width:7.5rem;
-  height:1rem;
-  background-color:blue;
-}
-.all:after{
-  display:block;
-  content:'';
-  clear:both;
-}
-.left{
-  float:left;
-  width:3rem;
-  height:1rem;
-  background-color:red;
-}
-
-.right{
-  float:left;
-  width:4.5rem;
-  height:1rem;
-  background-color:green;
-}
+<style lang="less" scoped>
+@import url("./style");
 </style>
