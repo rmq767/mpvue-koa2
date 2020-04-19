@@ -8,14 +8,34 @@
         <span class="icon"></span>
       </div>
     </div>
+    <!-- 轮播图 -->
+    <div class="swiper">
+      <swiper
+        class="swiper-container"
+        indicator-docs="true"
+        autoplay="true"
+        interval="3000"
+        circular="true"
+        duration="500"
+      >
+        <block v-for="(item, index) in banner" :key="index">
+          <swiper-item class="swiper_item">
+            <image class="slide_image" :src="item.image_url"></image>
+          </swiper-item>
+        </block>
+      </swiper>
+    </div>
   </div>
 </template>
 
 <script>
 import amapFile from "../../utils/amap-wx";
+import { get } from "../../utils/index";
 export default {
   data() {
-    return {};
+    return {
+      banner: [],
+    };
   },
   methods: {
     toMapPage() {
@@ -56,6 +76,10 @@ export default {
           _this.$store.commit("update", "北京");
         },
       });
+    },
+    async getData() {
+      const res = await get("/index");
+      console.log(res.data);
     },
   },
   computed: {
