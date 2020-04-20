@@ -30,7 +30,7 @@ function request(url, method, data, header = {}) {
   });
   return new Promise((resolve, reject) => {
     wx.request({
-      url: url,
+      url: host + url,
       data: data,
       header: {
         'content-type': 'application/json'
