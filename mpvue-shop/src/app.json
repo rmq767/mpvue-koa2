@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/search/main",
     "pages/index/main",
     "pages/topic/main",
     "pages/category/main",
@@ -9,7 +10,7 @@
     "pages/brandlist/main",
     "pages/categorylist/main",
     "pages/topicdetail/main",
-    "pages/search/main"
+    "pages/goods/main"
   ],
   "permission": {
     "scope.userLocation": {
